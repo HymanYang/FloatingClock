@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!--Android P 限制了明文流量请求 target=28 ,不配置导致应用内http无法使用 -->
+    <base-config cleartextTrafficPermitted="true" />
+    <!--<base-config cleartextTrafficPermitted="true">-->
+    <!--<trust-anchors>-->
+    <!--&lt;!&ndash;fiddler不能抓取https请求&ndash;&gt;-->
+    <!--<certificates-->
+    <!--overridePins="true"-->
+    <!--src="system" />-->
+    <!--<certificates-->
+    <!--overridePins="true"-->
+    <!--src="user" />-->
+    <!--</trust-anchors>-->
+    <!--</base-config>-->
+    <!--测试版本请求抓包配置 -->
+    <debug-overrides cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>

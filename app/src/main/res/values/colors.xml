@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="blue">#0000FF</color>
+    <color name="blue_1B82FF">#1B82FF</color>
     <color name="gold">#CD7F32</color>
 
     <color name="colorDarkGrey">#333333</color>
@@ -11,4 +12,6 @@
     <color name="colorSkyBlue">#55acff</color>
     <color name="colorDustyBlue">#51749d</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="bg_7f000000">#7f000000</color>
+    <color name="bg_8F8996">#8F8996</color>
 </resources>

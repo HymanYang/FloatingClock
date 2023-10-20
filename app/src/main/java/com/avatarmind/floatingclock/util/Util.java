@@ -8,10 +8,26 @@ import android.net.NetworkInfo;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class Util {
     private static final int MIN_CLICK_DELAY_TIME = 3 * 1000; // 两次点击按钮之间的点击最小时间间隔
     private static long lastClickTime = 0;
     private static long lastCallTime = 0;
+
+    /**
+     *
+     * @param time  1541569323155
+     * @param pattern yyyy-MM-dd HH:mm:ss
+     * @return 2018-11-07 13:42:03
+     */
+    public static String getDate2String(long time, String pattern) {
+        Date date = new Date(time);
+        SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.getDefault());
+        return format.format(date);
+    }
 
     public static boolean isFastClick(int delay_time) {
         boolean flag = true;
@@ -100,6 +116,8 @@ public class Util {
         Intent intent = new Intent(action);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
+
+
 
     public static void sendLocalBroadcast(Context context, String action, String extraName, int value) {
         if (context instanceof Context) {

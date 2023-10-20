@@ -10,6 +10,7 @@ import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
@@ -17,28 +18,53 @@ import android.widget.TextView;
 
 import com.avatarmind.floatingclock.service.FloatingService;
 import com.avatarmind.floatingclock.util.ClockInfo;
+import com.avatarmind.floatingclock.util.Constant;
 import com.avatarmind.floatingclock.util.LogUtil;
+import com.avatarmind.floatingclock.util.NetworkTools;
 import com.avatarmind.floatingclock.util.SharedPreferencesUtil;
 import com.avatarmind.floatingclock.util.ToastUtil;
 import com.avatarmind.floatingclock.util.Util;
 import com.avatarmind.floatingclock.util.event.UpdateClockViewEvent;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class MainActivity extends Activity {
     private TextView mTVClockSize;
+    private TextView mTimeFrom;
     private EditText mEtClockSize;
+    final int REQUEST_CODE = 110001;
+    Activity mActivity = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mActivity = this;
+
         SharedPreferencesUtil.initSharedPreferences(MainActivity.this);
         ClockInfo clockInfo = SharedPreferencesUtil.getClockInfo(MainActivity.this);
 
         mTVClockSize = (TextView) findViewById(R.id.tv_clocksize);
         mTVClockSize.setText(getString(R.string.currentclocksize) + clockInfo.getTextSize());
+
+        findViewById(R.id.getPermission).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkOverlayPermission();
+            }
+        });
+
+        mTimeFrom = findViewById(R.id.timeFrom);
+        mTimeFrom.setText("当前服务器时间：");
+
 
         mEtClockSize = (EditText) findViewById(R.id.et_clocksize);
         mEtClockSize.setText(String.valueOf(clockInfo.getTextSize()));
@@ -89,6 +115,8 @@ public class MainActivity extends Activity {
         });
 
         checkOverlayPermission();
+
+
     }
 
     @Override
@@ -106,27 +134,28 @@ public class MainActivity extends Activity {
             Util.stopService(MainActivity.this, FloatingService.class);
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 0) {
-            if (!Settings.canDrawOverlays(this)) {
-                ToastUtil.showToast(MainActivity.this, "授权失败");
-            } else {
+        if (requestCode == REQUEST_CODE) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.canDrawOverlays(this)) {
+                // 用户已经授权，进行弹出显示的操作
                 ToastUtil.showToast(MainActivity.this, "授权成功");
                 Util.startService(MainActivity.this, FloatingService.class);
+            } else {
+                // 用户未授权，提示用户开启权限
+                ToastUtil.showToast(MainActivity.this, "授权失败");
             }
         }
     }
 
     private void checkOverlayPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {//判断系统版本
-            if (!Settings.canDrawOverlays(this)) {
-                ToastUtil.showToast(MainActivity.this, "应用没有显示悬浮窗权限，请授权");
-                startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName())), 0);
-            } else {
-                Util.startService(MainActivity.this, FloatingService.class);
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            // 没有权限，进行下一步操作
+            ToastUtil.showToast(MainActivity.this, "应用没有显示悬浮窗权限，请授权");
+            startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName())), REQUEST_CODE);
         } else {
+            // 已经有权限，直接进行弹出显示的操作
             Util.startService(MainActivity.this, FloatingService.class);
         }
     }

@@ -34,6 +34,11 @@ android {
         abortOnError false
     }
 
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
     sourceSets.main.jniLibs.srcDirs = ['jniLibs']//找不到so添加这行
 }
 
@@ -47,6 +52,14 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'org.greenrobot:eventbus:3.1.1'
+
+//    implementation(platform("com.squareup.okhttp3:okhttp-bom:3.11.0"))
+//    implementation("com.squareup.okhttp3:okhttp")
+//    implementation("com.squareup.okhttp3:logging-interceptor")
+
+
+    implementation("com.squareup.okhttp3:okhttp:3.12.10")
+    implementation("com.squareup.okio:okio:1.15.0")
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
