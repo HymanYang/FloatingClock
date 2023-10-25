@@ -9,7 +9,7 @@
     </style>
 
     <style name="MyTextAppearance" parent="@android:style/TextAppearance.Small">
-        <item name="android:textSize">18dp</item>
+        <item name="android:textSize">14dp</item>
         <item name="android:textColor">@color/colorDustyBlue</item>
     </style>
 

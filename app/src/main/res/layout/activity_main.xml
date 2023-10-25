@@ -24,7 +24,7 @@
         android:orientation="vertical"
         android:padding="20dp">
 
-        <TextView
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/getPermission"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -41,47 +41,6 @@
 
     </android.support.v7.widget.LinearLayoutCompat>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:orientation="horizontal"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/tv_clocksize"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:text="@string/currentclocksize"
-            android:textSize="20dp" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal">
-
-        <EditText
-            android:id="@+id/et_clocksize"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/tv_setclocksize"
-            android:inputType="number"
-            android:textAlignment="center"
-            android:textSize="20dp" />
-
-        <TextView
-            android:id="@+id/tv_setclocksize"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:text="@string/clocksize"
-            android:textSize="20dp" />
-    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -96,7 +55,6 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toEndOf="@+id/tv_close_clock"
-            android:switchMinWidth="90dp"
             android:switchTextAppearance="@style/MyTextAppearance"
             android:textOff="@string/close"
             android:textOn="@string/open"
@@ -109,6 +67,6 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:text="@string/run_in_background"
-            android:textSize="20dp" />
+            android:textSize="14dp" />
     </RelativeLayout>
 </LinearLayout>

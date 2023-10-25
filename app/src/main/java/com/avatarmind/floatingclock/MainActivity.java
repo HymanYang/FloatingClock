@@ -24,9 +24,12 @@ import com.avatarmind.floatingclock.util.NetworkTools;
 import com.avatarmind.floatingclock.util.SharedPreferencesUtil;
 import com.avatarmind.floatingclock.util.ToastUtil;
 import com.avatarmind.floatingclock.util.Util;
+import com.avatarmind.floatingclock.util.event.CurrentEvent;
 import com.avatarmind.floatingclock.util.event.UpdateClockViewEvent;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -36,9 +39,8 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class MainActivity extends Activity {
-    private TextView mTVClockSize;
+
     private TextView mTimeFrom;
-    private EditText mEtClockSize;
     final int REQUEST_CODE = 110001;
     Activity mActivity = null;
 
@@ -48,62 +50,12 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         mActivity = this;
-
+        EventBus.getDefault().register(this);
         SharedPreferencesUtil.initSharedPreferences(MainActivity.this);
-        ClockInfo clockInfo = SharedPreferencesUtil.getClockInfo(MainActivity.this);
 
-        mTVClockSize = (TextView) findViewById(R.id.tv_clocksize);
-        mTVClockSize.setText(getString(R.string.currentclocksize) + clockInfo.getTextSize());
-
-        findViewById(R.id.getPermission).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkOverlayPermission();
-            }
-        });
+        findViewById(R.id.getPermission).setOnClickListener(v -> checkOverlayPermission());
 
         mTimeFrom = findViewById(R.id.timeFrom);
-        mTimeFrom.setText("当前服务器时间：");
-
-
-        mEtClockSize = (EditText) findViewById(R.id.et_clocksize);
-        mEtClockSize.setText(String.valueOf(clockInfo.getTextSize()));
-        mEtClockSize.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                LogUtil.i("afterTextChanged()");
-
-                try {
-                    String text = mEtClockSize.getText().toString();
-                    if (TextUtils.isEmpty(text)) {
-                        return;
-                    }
-
-                    ClockInfo clockInfo = SharedPreferencesUtil.getClockInfo(MainActivity.this);
-
-                    int size = Integer.parseInt(text);
-                    if (size <= 0 || size > 100) {
-                        ToastUtil.showToast(MainActivity.this, getString(R.string.clocksizeremind));
-                        mEtClockSize.setText("");
-                        return;
-                    }
-
-                    clockInfo.setTextSize(size);
-                    EventBus.getDefault().post(new UpdateClockViewEvent(clockInfo));
-                    mTVClockSize.setText(getString(R.string.currentclocksize) + clockInfo.getTextSize());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
 
         Switch switchCloseClock = (Switch) findViewById(R.id.st_close_clock);
         switchCloseClock.setChecked(SharedPreferencesUtil.isExit(MainActivity.this));
@@ -126,12 +78,12 @@ public class MainActivity extends Activity {
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
 
-        if (!SharedPreferencesUtil.isExit(MainActivity.this))
-            Util.stopService(MainActivity.this, FloatingService.class);
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventMainThread(CurrentEvent event) {
+        if (event != null && event.getCurrentTime() > 0) {
+            mTimeFrom.setText("当前服务器开始时间：" + Util.getDate2String(event.getCurrentTime(), "yyyy-MM-dd HH:mm:ss SSS"));
+        }
     }
 
 
@@ -158,5 +110,16 @@ public class MainActivity extends Activity {
             // 已经有权限，直接进行弹出显示的操作
             Util.startService(MainActivity.this, FloatingService.class);
         }
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
+        if (!SharedPreferencesUtil.isExit(MainActivity.this))
+            Util.stopService(MainActivity.this, FloatingService.class);
     }
 }

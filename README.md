@@ -1,2 +1,5 @@
 # FloatingClock
-玩游戏想下个悬浮时钟用用，结果全是带垃圾广告的，索性自己写了一个，非常纯净。
+fork了大佬的项目，修改成了淘宝用的定时器，精确到毫秒
+
+淘宝服务器时间：
+http://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp

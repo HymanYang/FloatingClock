@@ -27,6 +27,7 @@ import com.avatarmind.floatingclock.util.NetworkTools;
 import com.avatarmind.floatingclock.util.SharedPreferencesUtil;
 import com.avatarmind.floatingclock.util.ToastUtil;
 import com.avatarmind.floatingclock.util.Util;
+import com.avatarmind.floatingclock.util.event.CurrentEvent;
 import com.avatarmind.floatingclock.util.event.UpdateClockViewEvent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -121,7 +122,8 @@ public class FloatingService extends Service implements Handler.Callback {
             obmsg.what = 1;
             obmsg.obj = currentTime + changeTime;
             handler.sendMessageDelayed(obmsg, changeTime);
-            mTextClock.setText(Util.getDate2String(currentTime, "yyyy-MM-dd HH:mm:ss SSS"));
+//            mTextClock.setText(Util.getDate2String(currentTime, "yyyy-MM-dd HH:mm:ss SSS"));
+            mTextClock.setText(Util.getDate2String(currentTime, "HH:mm:ss SSS"));
         }
         return false;
     }
@@ -151,6 +153,9 @@ public class FloatingService extends Service implements Handler.Callback {
                         msg.what = 1;
                         msg.obj = currentTime;
                         handler.sendMessage(msg);
+
+                        EventBus.getDefault().post(new CurrentEvent(currentTime));
+
 //                        FloatingService.this.runOnUiThread(() -> {
 //                        mTextClock.setText(Util.getDate2String(currentTime, "yyyy-MM-dd HH:mm:ss SSS"));
 //                        });

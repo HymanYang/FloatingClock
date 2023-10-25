@@ -8,6 +8,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/git_dir/FloatingClock/app/src/main/res/drawable/bg_switch_thumb.xml" value="0.2484375" />
+        <entry key="..\:/git_dir/FloatingClock/app/src/main/res/drawable/bg_switch_track.xml" value="0.2484375" />
         <entry key="..\:/git_dir/FloatingClock/app/src/main/res/layout/activity_main.xml" value="0.20572916666666666" />
       </map>
     </option>
