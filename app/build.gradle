@@ -8,7 +8,7 @@ android {
         applicationId "com.avatarmind.floatingclock"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 2
+        versionCode 3
         versionName releaseTime()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -21,7 +21,7 @@ android {
             applicationVariants.all { variant ->
                 variant.outputs.all {
                     // 输出apk名称
-                    outputFileName = "FloatingClock_${defaultConfig.versionName}.apk"
+                    outputFileName = "FloatingClock_v${defaultConfig.versionCode}_${defaultConfig.versionName}.apk"
                 }
             }
         }

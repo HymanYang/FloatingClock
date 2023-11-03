@@ -28,6 +28,7 @@ import com.avatarmind.floatingclock.util.SharedPreferencesUtil;
 import com.avatarmind.floatingclock.util.ToastUtil;
 import com.avatarmind.floatingclock.util.Util;
 import com.avatarmind.floatingclock.util.event.CurrentEvent;
+import com.avatarmind.floatingclock.util.event.CurrentEvent2;
 import com.avatarmind.floatingclock.util.event.UpdateClockViewEvent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -104,7 +105,10 @@ public class FloatingService extends Service implements Handler.Callback {
             mTextClock.setBackgroundColor(getResources().getColor(R.color.colorWhite));
             mTextClock.setOnTouchListener(new FloatingOnTouchListener());
 
+            loadServiceTime2();
+
             loadServiceTime();
+            loadServiceTime3();
 
             windowManager.addView(mTextClock, layoutParams);
             windowManager.updateViewLayout(mTextClock.getRootView(), layoutParams);
@@ -149,16 +153,13 @@ public class FloatingService extends Service implements Handler.Callback {
                         JSONObject obj = new JSONObject(resStr);
                         JSONObject data = obj.getJSONObject("data");
                         Long currentTime = data.getLong("t");
-                        Message msg = new Message();
-                        msg.what = 1;
-                        msg.obj = currentTime;
-                        handler.sendMessage(msg);
+//                        Message msg = new Message();
+//                        msg.what = 1;
+//                        msg.obj = currentTime;
+//                        handler.sendMessage(msg);
 
                         EventBus.getDefault().post(new CurrentEvent(currentTime));
 
-//                        FloatingService.this.runOnUiThread(() -> {
-//                        mTextClock.setText(Util.getDate2String(currentTime, "yyyy-MM-dd HH:mm:ss SSS"));
-//                        });
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -168,6 +169,70 @@ public class FloatingService extends Service implements Handler.Callback {
         });
     }
 
+
+    public void loadServiceTime2() {
+        NetworkTools.get(Constant.TB_TIME_BJ, new Callback() {
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                LogUtil.e(e.getMessage());
+                ToastUtil.showToast(FloatingService.this, "接口解析数据失败22");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    //{"api":"mtop.common.getTimestamp","v":"*","ret":["SUCCESS::接口调用成功"],"data":{"t":"1697790850658"}}
+                    if (response != null) {
+                        String resStr = response.body().string();
+                        Long currentTime = Long.parseLong(resStr);
+                        Message msg = new Message();
+                        msg.what = 1;
+                        msg.obj = currentTime;
+                        handler.sendMessage(msg);
+
+                        EventBus.getDefault().post(new CurrentEvent2(currentTime,0));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ToastUtil.showToast(FloatingService.this, "接口解析数据失败22");
+                }
+            }
+        });
+    }
+
+    public void loadServiceTime3() {
+        NetworkTools.get(Constant.TB_TIME_SN, new Callback() {
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                LogUtil.e(e.getMessage());
+                ToastUtil.showToast(FloatingService.this, "接口解析数据失败33");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    //{"api":"mtop.common.getTimestamp","v":"*","ret":["SUCCESS::接口调用成功"],"data":{"t":"1697790850658"}}
+                    if (response != null) {
+                        String resStr = response.body().string();
+
+                        JSONObject obj = new JSONObject(resStr);
+                        Long currentTime = obj.getLong("currentTime");
+//                        Message msg = new Message();
+//                        msg.what = 1;
+//                        msg.obj = currentTime;
+//                        handler.sendMessage(msg);
+
+                        EventBus.getDefault().post(new CurrentEvent2(currentTime,1));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ToastUtil.showToast(FloatingService.this, "接口解析数据失败33");
+                }
+            }
+        });
+    }
 
     private void uninit() {
         EventBus.getDefault().unregister(this);

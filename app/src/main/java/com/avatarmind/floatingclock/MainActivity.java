@@ -25,6 +25,7 @@ import com.avatarmind.floatingclock.util.SharedPreferencesUtil;
 import com.avatarmind.floatingclock.util.ToastUtil;
 import com.avatarmind.floatingclock.util.Util;
 import com.avatarmind.floatingclock.util.event.CurrentEvent;
+import com.avatarmind.floatingclock.util.event.CurrentEvent2;
 import com.avatarmind.floatingclock.util.event.UpdateClockViewEvent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -40,9 +41,10 @@ import okhttp3.Response;
 
 public class MainActivity extends Activity {
 
-    private TextView mTimeFrom;
     final int REQUEST_CODE = 110001;
+    private TextView mTimeFrom;
     Activity mActivity = null;
+    StringBuilder sb = new StringBuilder();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,10 +84,32 @@ public class MainActivity extends Activity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventMainThread(CurrentEvent event) {
         if (event != null && event.getCurrentTime() > 0) {
-            mTimeFrom.setText("当前服务器开始时间：" + Util.getDate2String(event.getCurrentTime(), "yyyy-MM-dd HH:mm:ss SSS"));
+            mTimeFrom.setText("天猫:当前服务器开始时间：" + Util.getDate2String(event.getCurrentTime(), "yyyy-MM-dd HH:mm:ss SSS"));
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventMainThread2(CurrentEvent2 event) {
+        if (event != null && event.getCurrentTime() > 0) {
+            setNewTime(event);
+        }
+    }
+
+    public synchronized void setNewTime(CurrentEvent2 event) {
+
+        int type = event.getType();
+        String typeStr = "北京:";
+        if (type == 1) {
+            typeStr = "苏宁:";
+        }
+
+        sb.append(typeStr);
+        sb.append("当前服务器开始时间：");
+        sb.append(Util.getDate2String(event.getCurrentTime(), "yyyy-MM-dd HH:mm:ss SSS"));
+        sb.append("\n");
+
+        ((TextView) findViewById(R.id.timeFrom2)).setText(sb.toString());
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
